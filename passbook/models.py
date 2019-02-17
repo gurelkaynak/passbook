@@ -26,11 +26,13 @@ class Alignment:
     JUSTIFIED = 'PKTextAlignmentJustified'
     NATURAL = 'PKTextAlignmentNatural'
 
-class BarcodeFormat:    
+
+class BarcodeFormat:
     PDF417 = 'PKBarcodeFormatPDF417'
     QR = 'PKBarcodeFormatQR'
     AZTEC = 'PKBarcodeFormatAztec'
     CODE128 = 'PKBarcodeFormatCode128'
+
 
 class TransitType:
     AIR = 'PKTransitTypeAir'
@@ -57,13 +59,12 @@ class NumberStyle:
 
 class Field(object):
 
-    def __init__(self, key, value, label=''):
-
+    def __init__(self, key, value, label='', text_alignment=Alignment.LEFT):
         self.key = key  # Required. The key must be unique within the scope
         self.value = value  # Required. Value of the field. For example, 42
         self.label = label  # Optional. Label text for the field.
         self.changeMessage = ''  # Optional. Format string for the alert text that is displayed when the pass is updated
-        self.textAlignment = Alignment.LEFT
+        self.textAlignment = text_alignment
 
     def json_dict(self):
         return self.__dict__
@@ -168,8 +169,8 @@ class PassInformation(object):
         self.backFields = []
         self.auxiliaryFields = []
 
-    def addHeaderField(self, key, value, label):
-        self.headerFields.append(Field(key, value, label))
+    def addHeaderField(self, key, value, label, alignment=Alignment.LEFT):
+        self.headerFields.append(Field(key, value, label, alignment))
 
     def addPrimaryField(self, key, value, label):
         self.primaryFields.append(Field(key, value, label))
@@ -272,7 +273,7 @@ class Pass(object):
         self.labelColor = None  # Optional. Color of the label text
         self.logoText = None  # Optional. Text displayed next to the logo
         self.barcode = None  # Optional. Information specific to barcodes.  This is deprecated and can only be set to original barcode formats.
-        self.barcodes = None #Optional.  All supported barcodes
+        self.barcodes = None  # Optional.  All supported barcodes
         # Optional. If true, the strip image is displayed
         self.suppressStripShine = False
 
@@ -375,7 +376,7 @@ class Pass(object):
             'suppressStripShine': self.suppressStripShine,
             self.passInformation.jsonname: self.passInformation.json_dict()
         }
-        #barcodes have 2 fields, 'barcode' is legacy so limit it to the legacy formats, 'barcodes' supports all
+        # barcodes have 2 fields, 'barcode' is legacy so limit it to the legacy formats, 'barcodes' supports all
         if self.barcode:
             original_formats = [BarcodeFormat.PDF417, BarcodeFormat.QR, BarcodeFormat.AZTEC]
             legacyBarcode = self.barcode
